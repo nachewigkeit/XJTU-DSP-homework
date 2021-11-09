@@ -43,6 +43,17 @@ def frame(wave_data, wlen, inc):
     return frames
 
 
+def split(wave_data, tickNum):
+    signal_length = len(wave_data)
+    step = int(np.ceil(signal_length / tickNum))
+
+    pad_length = int(step * tickNum)
+    zeros = np.zeros((pad_length - signal_length,))
+    pad_signal = np.concatenate((wave_data, zeros))
+    frames = pad_signal.reshape((tickNum, -1))
+    return frames
+
+
 def window(frames, method="hanning"):
     lframe = frames.shape[1]
     if method == "hanning":
@@ -84,7 +95,7 @@ def resample(s: np.ndarray, f: int, t: int) -> np.ndarray:
 def calEnergy(frames):
     frame1 = copy.deepcopy(frames)
     frame2 = copy.deepcopy(frames)
-    energy = np.sum(frame1 * frame2, axis=1)
+    energy = np.average(frame1 * frame2, axis=1)
     return energy.reshape(-1)
 
 

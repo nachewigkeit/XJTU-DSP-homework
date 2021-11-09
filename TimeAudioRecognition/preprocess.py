@@ -19,7 +19,7 @@ for group in tqdm(os.listdir(config.datasetPath)):
             framerate = info[2]
 
             # 帧数
-            frames = utils.frame(wave_data, wlen, inc)
+            frames = utils.split(wave_data, 100)
             nf = frames.shape[0]
 
             energy = utils.calEnergy(frames).reshape((-1, 1))
