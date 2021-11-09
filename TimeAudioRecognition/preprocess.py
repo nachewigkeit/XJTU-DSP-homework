@@ -20,7 +20,7 @@ for group in tqdm(os.listdir(config.datasetPath)):
                 print(os.path.join(numdir, file))
 
             # 帧数
-            frames = utils.split(wave_data, 1000)
+            frames = utils.split(wave_data, 100)
             nf = frames.shape[0]
             # frames = utils.window(frames)
 
@@ -28,7 +28,9 @@ for group in tqdm(os.listdir(config.datasetPath)):
             feat = [
                 feature.zeroCrossingRate(frames).reshape((1, -1)),
                 feature.averageEnergy(frames).reshape((1, -1)),
-                feature.std(frames).reshape((1, -1))
+                feature.std(frames).reshape((1, -1)),
+                feature.kurt(frames).reshape((1, -1)),
+                feature.wave(frames).reshape((1, -1)),
             ]
             feat = np.hstack(feat)
 

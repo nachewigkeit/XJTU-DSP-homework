@@ -15,3 +15,24 @@ def zeroCrossingRate(frames):
 
 def std(frames):
     return np.std(frames, axis=1).reshape(-1)
+
+
+def kurt(frames):
+    maximum = np.max(frames, axis=1)
+    rms = np.sqrt(averageEnergy(frames)) + 1e-6
+    return (maximum / rms).reshape(-1)
+
+
+def wave(frames):
+    rms = np.sqrt(averageEnergy(frames)) + 1e-6
+    mean = np.average(frames, axis=1)
+    mean[abs(mean) < 1e-6] = 1e-6
+    return (rms / mean).reshape(-1)
+
+
+def mean(frames):
+    return np.mean(frames, axis=1).reshape(-1)
+
+
+def max(frames):
+    return np.max(frames, axis=1).reshape(-1)
