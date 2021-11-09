@@ -1,1 +1,1 @@
-datasetPath = r"E:\AI\dataset\audio"
+datasetPath = r"E:\dataset\audio"

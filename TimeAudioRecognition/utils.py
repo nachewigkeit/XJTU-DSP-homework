@@ -1,6 +1,6 @@
 import numpy as np
 import wave
-import copy
+import feature
 
 
 def wavDecode(dir: str) -> np.ndarray:
@@ -92,24 +92,13 @@ def resample(s: np.ndarray, f: int, t: int) -> np.ndarray:
     return ret
 
 
-def calEnergy(frames):
-    frame1 = copy.deepcopy(frames)
-    frame2 = copy.deepcopy(frames)
-    energy = np.average(frame1 * frame2, axis=1)
-    return energy.reshape(-1)
+def double_thresh(wave_data):
+    frame_lens = 512
+    move = 128
 
+    frames = frame(wave_data, frame_lens, move)
+    energy = feature.averageEnergy(frames)
 
-def calZeroCrossingRate(frames):
-    _, lens = frames.shape
-    frame1 = copy.deepcopy(frames[:, :lens - 1])
-    frame2 = copy.deepcopy(frames[:, 1:])
-    delta = np.abs(np.sign(frame2) - np.sign(frame1))
-    zeroCrossingRate = delta.sum(-1) / 2
-    return zeroCrossingRate.reshape(-1)
-
-
-# 利用短时能量，短时过零率，使用双门限法进行端点检测
-def Double_thresh(wave_data, energy, CrossZero):
     energy_mean = energy.mean()
     T1 = np.mean(energy[:10])
     T2 = energy_mean / 4  # 较高的能量阈值
@@ -132,17 +121,7 @@ def Double_thresh(wave_data, energy, CrossZero):
             N5 = j
             break
 
-    # 利用过零率进行最后一步检测
-    part1, part2 = CrossZero[:N2], CrossZero[N5:]
-    T3 = (np.mean(part1) + np.mean(part2)) / 2
-    N1, N6 = N2, N5
-    for i in range_o[:N2][::-1]:  # 从N2向左搜索 从N5向右搜索
-        if CrossZero[i] <= T3:
-            N1 = i
-            break
-    for j in range_o[N5:]:
-        if CrossZero[j] <= T3:
-            N6 = j
-            break
+    L_w = N2 * move + frame_lens // 2
+    R_w = N5 * move + frame_lens // 2
 
-    return N2, N5
+    return wave_data[L_w:R_w]

@@ -1,32 +1,40 @@
 import os
+import numpy as np
 import config
 import utils
+import feature
 from tqdm import tqdm
 import pickle
 
-wlen = 512  # 帧长
-inc = 128  # 帧移
-
 datadict = {}
-
 for group in tqdm(os.listdir(config.datasetPath)):
     for num in range(10):
         numdir = os.path.join(config.datasetPath, group, str(num))
         for file in os.listdir(numdir):
             # 读wav文件并归一化
             info, wave_data = utils.wavDecode(os.path.join(numdir, file))
-            wave_data = wave_data[:, 0] * 1.0 / (max(abs(wave_data[:, 0])))
-            framerate = info[2]
+            wave_data = wave_data[:, 0]
+            wave_data = wave_data * 1.0 / (max(abs(wave_data)))
+            wave_data = utils.double_thresh(wave_data)
+            if len(wave_data) < 1000:
+                print(os.path.join(numdir, file))
 
             # 帧数
-            frames = utils.split(wave_data, 100)
+            frames = utils.split(wave_data, 1000)
             nf = frames.shape[0]
+            # frames = utils.window(frames)
 
-            energy = utils.calEnergy(frames).reshape((-1, 1))
+            # 特征
+            feat = [
+                feature.zeroCrossingRate(frames).reshape((1, -1)),
+                feature.averageEnergy(frames).reshape((1, -1)),
+                feature.std(frames).reshape((1, -1))
+            ]
+            feat = np.hstack(feat)
 
             if num not in datadict.keys():
                 datadict[num] = []
-            datadict[num].append(energy)
+            datadict[num].append(feat)
 
 x = []
 y = []
