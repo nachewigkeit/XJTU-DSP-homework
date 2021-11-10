@@ -30,9 +30,13 @@ def wave(frames):
     return (rms / mean).reshape(-1)
 
 
-def mean(frames):
-    return np.mean(frames, axis=1).reshape(-1)
+def grad(frames):
+    _, lens = frames.shape
+    delta = np.abs(frames[:, 1:] - frames[:, :lens - 1])
+    return np.average(delta, axis=1).reshape(-1)
 
 
-def max(frames):
-    return np.max(frames, axis=1).reshape(-1)
+def relate(frames):
+    lens, _ = frames.shape
+    product = frames[:lens - 1, :] * frames[1:, :]
+    return np.average(product, axis=1).reshape(-1)

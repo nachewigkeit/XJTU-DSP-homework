@@ -1,6 +1,7 @@
 import numpy as np
 import wave
 import feature
+from numba import jit
 
 
 def wavDecode(dir: str) -> np.ndarray:
@@ -61,6 +62,7 @@ def window(frames, method="hanning"):
         return frames * windown
 
 
+@jit(nopython=True)
 def resample(s: np.ndarray, f: int, t: int) -> np.ndarray:
     """
     重采样
@@ -81,13 +83,14 @@ def resample(s: np.ndarray, f: int, t: int) -> np.ndarray:
             j += 1
         tmp = i * f / t - j
 
-        if j + 1 >= n:
+        if j + 1 > n:
             print("存在边界问题")
-            print(i, f, t)
+            print(nn, i, f, t)
             break
 
         for k in range(m):
-            ret[i, k] = s[j, k] * (1 - tmp) + s[j + 1, k] * tmp
+            ret[i, k] = s[j, k] * (1 - tmp) + (s[j + 1,
+                                                 k] if j + 1 < n else 0) * tmp
 
     return ret
 
