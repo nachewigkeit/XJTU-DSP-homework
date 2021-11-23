@@ -1,4 +1,5 @@
 import numpy as np
+from python_speech_features import mfcc
 
 
 def averageEnergy(frames):
@@ -40,3 +41,18 @@ def relate(frames):
     lens, _ = frames.shape
     product = frames[:lens - 1, :] * frames[1:, :]
     return np.average(product, axis=1).reshape(-1)
+
+
+def compute_mfcc(signal, numcep=13, nfilt=26, split=10):
+    mfcc_feat = mfcc(signal, samplerate=44100, winlen=0.02, numcep=numcep, nfilt=nfilt, nfft=1024)
+    length = mfcc_feat.shape[0] / split
+    step = 0
+    feature = []
+    for i in range(split):
+        start = np.floor(step).astype('int')
+        end = np.ceil(step + length)
+        end = int(min(end, mfcc_feat.shape[0]))
+        feature.append(np.average(mfcc_feat[start:end, :], axis=0))
+        step += length
+    feature = np.hstack(feature)
+    return feature

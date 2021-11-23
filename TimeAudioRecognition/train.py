@@ -13,16 +13,18 @@ with open("data/y", "rb") as f:
 
 x = np.vstack(x)
 y = np.array(y, dtype='int')
-train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.2)
+train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.2, random_state=0)
 print(train_x.shape)
 
 # clf = SVC(C=5)
-clf = RandomForestClassifier(oob_score=True)
+clf = RandomForestClassifier(oob_score=True, random_state=0)
 clf.fit(train_x, train_y)
 yPred = clf.predict(test_x)
 print(f1_score(test_y, yPred, average='macro'))
+'''
 matrix = confusion_matrix(test_y, yPred)
 plt.xticks(range(10))
 plt.yticks(range(10))
 plt.imshow(matrix, cmap='Blues')
 plt.savefig(r"image/confusion.png", bbox_inches='tight')
+'''
