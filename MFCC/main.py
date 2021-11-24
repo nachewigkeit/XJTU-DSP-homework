@@ -1,20 +1,11 @@
 import utils
 import matplotlib.pyplot as plt
-import os
-import config
 import numpy as np
 
-info, wave_data = utils.wavDecode(os.path.join(config.datasetPath, r"1_34_1\0\0_0.wav"))
-wave_data = wave_data[:, 0]
-signal = wave_data * 1.0 / (max(abs(wave_data)))
-
+signal = utils.get_example(r"1_34_1\0\0_0.wav")
 frames = utils.frame(signal, 1000, 400)
 frames = utils.window(frames)
-
-NFFT = 512
-mag_frames = np.absolute(np.fft.rfft(frames, NFFT))
-print(mag_frames.shape)
-pow_frames = ((1.0 / NFFT) * ((mag_frames) ** 2))
+pow_frames = utils.get_power(frames)
 
 '''
 pre_emphasis = 0.95

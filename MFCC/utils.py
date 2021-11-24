@@ -1,5 +1,7 @@
 import numpy as np
 import wave
+import os
+import config
 
 
 def wavDecode(dir: str) -> np.ndarray:
@@ -47,3 +49,16 @@ def window(frames, method="hanning"):
     if method == "hanning":
         windown = np.hanning(lframe)
         return frames * windown
+
+
+def get_example(fname):
+    info, wave_data = wavDecode(os.path.join(config.datasetPath, fname))
+    wave_data = wave_data[:, 0]
+    signal = wave_data * 1.0 / (max(abs(wave_data)))
+    return signal
+
+
+def get_power(frames, NFFT=512):
+    mag_frames = np.absolute(np.fft.rfft(frames, NFFT))
+    pow_frames = ((1.0 / NFFT) * ((mag_frames) ** 2))
+    return pow_frames

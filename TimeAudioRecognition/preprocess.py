@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import matplotlib.pyplot as plt
 import config
 import utils
 import feature
@@ -7,6 +8,7 @@ from tqdm import tqdm
 import pickle
 
 datadict = {}
+length_stat = []
 for group in tqdm(os.listdir(config.datasetPath)):
     for num in range(10):
         numdir = os.path.join(config.datasetPath, group, str(num))
@@ -18,6 +20,7 @@ for group in tqdm(os.listdir(config.datasetPath)):
             wave_data = wave_data[:, 0]
             wave_data = wave_data * 1.0 / (max(abs(wave_data)))
             wave_data = utils.double_thresh(wave_data)
+            length_stat.append(len(wave_data) / 44100)
             if len(wave_data) < 1000:
                 print(os.path.join(numdir, file))
 
@@ -41,7 +44,7 @@ for group in tqdm(os.listdir(config.datasetPath)):
             feat = np.hstack(feat)
             '''
 
-            feat = feature.compute_mfcc(wave_data, numcep=13, nfilt=26, split=10)
+            feat = feature.compute_mfcc(wave_data, numcep=16, nfilt=20, split=1)
 
             if num not in datadict.keys():
                 datadict[num] = []
@@ -59,3 +62,11 @@ with open(r"data/x", "wb") as f:
     pickle.dump(x, f)
 with open(r"data/y", "wb") as f:
     pickle.dump(y, f)
+
+'''
+print(np.percentile(length_stat, 0.1))
+print(np.percentile(length_stat, 0.5))
+print(np.percentile(length_stat, 0.9))
+plt.hist(length_stat)
+plt.savefig(r"image/length.png", bbox_inches="tight")
+'''

@@ -1,6 +1,5 @@
 import pickle
 import numpy as np
-from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score, confusion_matrix
@@ -21,10 +20,9 @@ clf = RandomForestClassifier(oob_score=True, random_state=0)
 clf.fit(train_x, train_y)
 yPred = clf.predict(test_x)
 print(f1_score(test_y, yPred, average='macro'))
-'''
+
 matrix = confusion_matrix(test_y, yPred)
 plt.xticks(range(10))
 plt.yticks(range(10))
 plt.imshow(matrix, cmap='Blues')
 plt.savefig(r"image/confusion.png", bbox_inches='tight')
-'''
