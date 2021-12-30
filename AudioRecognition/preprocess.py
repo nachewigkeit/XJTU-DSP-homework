@@ -1,6 +1,6 @@
 import os
-# import numpy as np
-# import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.pyplot as plt
 import config
 import utils
 import feature
@@ -24,12 +24,10 @@ for group in tqdm(os.listdir(config.datasetPath)):
             if len(wave_data) < 1000:
                 print(os.path.join(numdir, file))
 
-            '''
             # 帧数
             frames = utils.split(wave_data, 10)
             nf = frames.shape[0]
             frames = utils.window(frames)
-            print(frames.shape)
 
             # 特征
             feat = [
@@ -42,9 +40,10 @@ for group in tqdm(os.listdir(config.datasetPath)):
                 feature.relate(frames).reshape((1, -1))
             ]
             feat = np.hstack(feat)
-            '''
 
+            '''
             feat = feature.compute_mfcc(wave_data, numcep=16, nfilt=20, split=10)
+            '''
 
             if num not in datadict.keys():
                 datadict[num] = []
